@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route, Navigate  } from "react-router-dom";
 import { useAuthState } from "../utilities/firebase";
 import LandingPage from '../pages/LandingPage';
 import HomePage from '../pages/HomePage';
+import UploadPage from '../pages/UploadPage';
 
 
 export const userContext = createContext(); 
@@ -30,6 +31,7 @@ const Dispatcher = () => {
         <BrowserRouter> 
             <Routes>
                 <Route path="/" element={<HomePage />} /> 
+        <Route path="/upload" element={<UploadPage />} /> 
             </Routes>
         
         </BrowserRouter>
