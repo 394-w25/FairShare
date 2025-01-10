@@ -7,10 +7,10 @@ import ReceiptPage from '../pages/ReceiptPage';
 const Dispatcher = () => {
     const mockUser = {
         item_list: [
-            {name: 'salmon roll', price: 12.95},
-            {name:'california roll', price: 8.95},
-            {name:'rice', price: 2.00},
-            {name: 'tuna roll', price: 12.50}
+            {id: 1, name: 'salmon roll', price: 12.95, quantity: 3},
+            {id: 2, name:'california roll', price: 8.95, quantity: 2},
+            {id: 3, name:'rice', price: 2.00, quantity: 1},
+            {id: 4, name: 'tuna roll', price: 12.50, quantity: 4}
         ],
         person : {name: 'Amy'}
     };

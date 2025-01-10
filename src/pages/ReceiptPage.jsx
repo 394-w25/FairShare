@@ -1,12 +1,33 @@
 
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+
 const ReceiptPage = (props) => {
     // currently using mock User input
+    const navigate = useNavigate();
     const items = props.item_list
-    const assignUser = () => {
-        console.log('Item assigned');
+    const [quantities, setQuantities] = useState(Array(items.length).fill(0));
+    const addItem = (index) => {
+        setQuantities(prev => {
+            const newQuantities = [...prev];
+            if (newQuantities[index] < items[index].quantity) {
+                newQuantities[index] += 1;
+            }
+            return newQuantities;
+          });
+      };
+    const subtractItem = (index) => {
+        setQuantities(prev => {
+            const newQuantities = [...prev];
+            if (newQuantities[index] > 0) {
+              newQuantities[index] -= 1;
+            }
+            return newQuantities;
+          });
       };
     const sendMessage = () => {
         console.log('Message Sent');
+        navigate('./PaymentPage');
       };
 
     return (
@@ -16,16 +37,22 @@ const ReceiptPage = (props) => {
             </div>
             <div className="ingredient-sheet">
                 <ul className="space-y-2">
-                    {items.map((item) => (
-                        <div key={item} className="flex bg-purple-100 rounded-lg justify-between items-center py-4 min-h-[4rem] px-6 border border-gray-300">
-                            <li className="flex flex-col">
+                    {items.map((item, index) => (
+                        <div key={item.id} className="flex bg-purple-100 rounded-lg items-center py-4 min-h-[4rem] px-6 border border-gray-300">
+                            <li className="flex flex-col flex-1">
                                 <span className="font-medium">{item.name}</span>
                                 <span className="text-gray-600">${item.price}</span>
                             </li>
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" onClick={assignUser} className="w-6 h-6"
->
-                                <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v6m3-3H9m12 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
-                            </svg>
+                            <div className="flex gap-4">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" onClick={() => subtractItem(index)} className="size-6">
+                                    <path strokeLinecap="round" strokeLinejoin="round" d="M15 12H9m12 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                                </svg>
+                                {quantities[index]}
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" onClick={() => addItem(index)} className="size-6"
+    >
+                                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v6m3-3H9m12 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                                </svg>
+                            </div>
 
                         </div>
                     ))}
