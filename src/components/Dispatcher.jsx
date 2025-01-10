@@ -22,8 +22,6 @@ const Dispatcher = () => {
             <Route path="/" element={<LandingPage />} /> 
             <Route path="/home" element={<HomePage />} /> 
             <Route path="/receipt" element={<ReceiptPage {...mockUser} current_index={0}/>} /> 
-            <Route path="/receiptpage" element={<UploadReceiptPage />} /> 
-
         </Routes>
     
     </BrowserRouter>)
