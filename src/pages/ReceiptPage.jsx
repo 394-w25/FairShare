@@ -6,12 +6,14 @@ const ReceiptPage = (props) => {
     // currently using mock User input
     const navigate = useNavigate();
     const items = props.item_list
+    const total_cost = 0
     const [quantities, setQuantities] = useState(Array(items.length).fill(0));
     const addItem = (index) => {
         setQuantities(prev => {
             const newQuantities = [...prev];
             if (newQuantities[index] < items[index].quantity) {
                 newQuantities[index] += 1;
+                total_cost += items[index].price
             }
             return newQuantities;
           });
@@ -21,13 +23,17 @@ const ReceiptPage = (props) => {
             const newQuantities = [...prev];
             if (newQuantities[index] > 0) {
               newQuantities[index] -= 1;
+              total_cost -= items[index].price
             }
             return newQuantities;
           });
       };
     const sendMessage = () => {
         console.log('Message Sent');
-        navigate('./PaymentPage');
+        const personProp = {
+            person: {name: props.person.name, cost: total_cost}
+        }
+        navigate('./PaymentPage', { state: personProp });
       };
 
     return (
