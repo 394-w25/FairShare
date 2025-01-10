@@ -38,6 +38,7 @@ const ReceiptPage = (props, current_index) => {
         console.log('Message Sent');
         navigate('./PaymentPage', { state: {
             people: props.people, 
+            userName: props.mainUser.userName, 
             cost: total_cost,
             currentIndex: current_index
         }
