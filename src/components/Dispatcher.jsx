@@ -18,7 +18,7 @@ const Dispatcher = () => {
 
     <BrowserRouter> 
         <Routes>
-            <Route path="/" element={<LadningPage/>}/>
+            <Route path="/" element={<LandingPage/>}/>
             <Route path="*" element={ <Navigate to="/"/> } /> 
         </Routes>
     </BrowserRouter>
