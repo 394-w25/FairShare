@@ -1,9 +1,9 @@
 import { useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 
-const phone_num = 6314324732
+const PaymentPage = (props) => {
+    console.log(props.person.name)
 
-const PaymentPage = () => {
     const [number, setNumber] = useState('')
     const [isNumberValid, setIsNumberValid] = useState(true)
 
@@ -29,6 +29,8 @@ const PaymentPage = () => {
             <span className="font-semibold text-3xl">
                 FairShare
             </span>
+            <p>{props.person.name}</p>
+            <p>{props.cost}</p>
             <input onChange={onPhoneNumberChanged}></input>
             {!isNumberValid && <p>This number is invalid</p>}
             <button 
