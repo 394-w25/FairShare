@@ -5,12 +5,20 @@ const phone_num = 6314324732
 
 const PaymentPage = () => {
     const [number, setNumber] = useState('')
+    const [isNumberValid, setIsNumberValid] = useState(true)
 
     const onPhoneNumberChanged = (event) => {
         event.target.value != number ? setNumber(event.target.value) : print("Number same")
     };
 
     const handleSMS = (phone_num) => {
+        // Validate phone number
+        if(phone_num.length() != 10){
+            print("INVALID NUMBER")
+            setIsNumberValid(false)
+            return
+        }
+
         window.location.href = 'sms:+1' + phone_num + '?body=TEST';
     };
 
@@ -20,6 +28,7 @@ const PaymentPage = () => {
                 FairShare
             </span>
             <input onChange={onPhoneNumberChanged}></input>
+            {!isNumberValid && <p>This number is invalid</p>}
             <button 
                 className="bg-purple-500 rounded-lg px-2 py-2 font-semibold text-white text-lg" 
                 onClick={() => handleSMS(number)}
