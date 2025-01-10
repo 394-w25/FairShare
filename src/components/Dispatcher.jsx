@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route, Navigate  } from "react-router-dom";
 import { useAuthState } from "../utilities/firebase";
 import LandingPage from '../pages/LandingPage';
 import HomePage from '../pages/HomePage';
+import PaymentPage from "../pages/PaymentPage";
 
 
 export const userContext = createContext(); 
@@ -29,8 +30,14 @@ const Dispatcher = () => {
 
     <BrowserRouter> 
         <Routes>
+<<<<<<< HEAD
             <Route path="/" element={<LandingPage/>}/>
             <Route path="*" element={ <Navigate to="/"/> } /> 
+=======
+            <Route path="/" element={<LandingPage />} /> 
+            <Route path="/home" element={<HomePage />} /> 
+            <Route path="/pay" element={<PaymentPage />} />
+>>>>>>> payment-request-page
         </Routes>
     </BrowserRouter>
     
