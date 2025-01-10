@@ -9,6 +9,7 @@ const Dispatcher = () => {
         <Routes>
             <Route path="/" element={<LandingPage />} /> 
             <Route path="/home" element={<HomePage />} /> 
+            <Route path="/upload" element={<UploadPage />} /> 
 
         </Routes>
     
