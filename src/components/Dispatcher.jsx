@@ -16,14 +16,6 @@ const Dispatcher = () => {
 
     return (user ? 
 
-    <BrowserRouter> 
-        <Routes>
-            <Route path="/" element={<LandingPage/>}/>
-            <Route path="*" element={ <Navigate to="/"/> } /> 
-        </Routes>
-    </BrowserRouter>
-    
-    : 
     <userContext.Provider value={user}>
         <BrowserRouter> 
             <Routes>
@@ -32,6 +24,16 @@ const Dispatcher = () => {
         
         </BrowserRouter>
     </userContext.Provider>
+
+    :
+
+    <BrowserRouter> 
+        <Routes>
+            <Route path="/" element={<LandingPage/>}/>
+            <Route path="*" element={ <Navigate to="/"/> } /> 
+        </Routes>
+    </BrowserRouter>
+    
     )
 
 }

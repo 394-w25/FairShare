@@ -1,7 +1,11 @@
+import { signOut } from '../utilities/firebase';
 
 const HomePage = () => {
 
-    return (<p> Logged In Page</p>); 
+    return (
+    <button onClick={signOut}> 
+        Sign Out
+    </button>); 
 
 }
 
