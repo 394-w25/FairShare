@@ -13,13 +13,15 @@ const PaymentPage = () => {
 
     const handleSMS = (phone_num) => {
         // Validate phone number
-        if(phone_num.length() != 10){
-            print("INVALID NUMBER")
+        console.log(typeof phone_num)
+        if(phone_num.length != 10 || isNaN(parseInt(phone_num))){
             setIsNumberValid(false)
             return
         }
-
-        window.location.href = 'sms:+1' + phone_num + '?body=TEST';
+        else{
+            setIsNumberValid(true)
+            window.location.href = 'sms:+1' + phone_num + '?body=TEST';
+        }
     };
 
     return (
