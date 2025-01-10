@@ -2,18 +2,24 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-const ReceiptPage = (props) => {
+const ReceiptPage = (props, current_index) => {
     // currently using mock User input
     const navigate = useNavigate();
     const items = props.item_list
-    const total_cost = 0
+    const [totalCost, setTotalCost] = useState(0);
     const [quantities, setQuantities] = useState(Array(items.length).fill(0));
+    const incrementTotalCost = (price) => {
+        setTotalCost(prevCount => prevCount + price);
+    };
+    const decrementTotalCost = (price) => {
+        setTotalCost(prevCount => prevCount - price);
+    };
     const addItem = (index) => {
         setQuantities(prev => {
             const newQuantities = [...prev];
             if (newQuantities[index] < items[index].quantity) {
                 newQuantities[index] += 1;
-                total_cost += items[index].price
+                incrementTotalCost(items[index].price)
             }
             return newQuantities;
           });
@@ -23,23 +29,32 @@ const ReceiptPage = (props) => {
             const newQuantities = [...prev];
             if (newQuantities[index] > 0) {
               newQuantities[index] -= 1;
-              total_cost -= items[index].price
+              decrementTotalCost(items[index].price)
             }
             return newQuantities;
           });
       };
     const sendMessage = () => {
         console.log('Message Sent');
-        const personProp = {
-            person: {name: props.person.name, cost: total_cost}
+        navigate('./PaymentPage', { state: {
+            person: {
+                userName: props.mainUser.userName, 
+                name: props.people[current_index], 
+                cost: total_cost
+            },
+            currentIndex: current_index
         }
-        navigate('./PaymentPage', { state: personProp });
+    });
       };
 
     return (
         <div className="p-4">
             <div className="text-3xl text-center font-bold mb-4">
-            {props.person.name}
+            {props.people[current_index]}
+            </div>
+            <div className="flex flex-col">
+            <span className="text-xl text-center font-medium">Total Cost</span>
+            <span className="text-xl text-stone-800 text-center font-bold mt-4 mb-4">${Math.abs(totalCost).toFixed(2)}</span>
             </div>
             <div className="ingredient-sheet">
                 <ul className="space-y-2">
@@ -68,7 +83,7 @@ const ReceiptPage = (props) => {
                     onClick={sendMessage}
                     className="bg-stone-900 rounded-lg text-white px-6 py-3 rounded hover:bg-purple-800"
                 >
-                    Send {props.person.name} a Message
+                    Send {props.people.current_index} a Message
                 </button>
 
                 </div>

@@ -12,14 +12,15 @@ const Dispatcher = () => {
             {id: 3, name:'rice', price: 2.00, quantity: 1},
             {id: 4, name: 'tuna roll', price: 12.50, quantity: 4}
         ],
-        person : {name: 'Amy'}
+        mainUser: {name:'Jerry'},
+        people : ['Amy', 'Johnny', 'Katie']
     };
 
     return (<BrowserRouter> 
         <Routes>
             <Route path="/" element={<LandingPage />} /> 
             <Route path="/home" element={<HomePage />} /> 
-            <Route path="/receipt" element={<ReceiptPage {...mockUser}/>} /> 
+            <Route path="/receipt" element={<ReceiptPage {...mockUser} current_index={0}/>} /> 
 
         </Routes>
     
