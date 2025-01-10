@@ -1,8 +1,8 @@
 import { useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 
-const [number, setNumber] = useState('')
-
+//const [number, setNumber] = useState('')
+const phone_num = 6314324732
 
 const handleSMS = (phone_num) => {
     window.location.href = 'sms:+1' + phone_num + '?body=TEST';
