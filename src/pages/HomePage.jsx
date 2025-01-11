@@ -50,7 +50,7 @@ const HomePage = () => {
             Create New Group 
         </button>
 
-        <NewGroupModal users={listOfUsers} isOpen={isOpen} setIsOpen={setIsOpen}/> 
+        {isOpen && <NewGroupModal users={listOfUsers} isOpen={isOpen} setIsOpen={setIsOpen}/> }
 
         
     </div>); 
