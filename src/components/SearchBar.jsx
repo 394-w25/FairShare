@@ -9,7 +9,7 @@ const SearchBar = ( {search, setSearch}) => {
     return ( 
         <input type="text" 
                 placeholder="Add people to the group"
-                className="rounded-md border-2 border-black p-2 outline-none"
+                className="rounded-md bg-gray-200  p-2 mb-2 mx-2 outline-none"
                 value={search}
                 onChange={(e) => handleChange(e)}/>
     );
