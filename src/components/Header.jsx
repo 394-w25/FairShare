@@ -2,7 +2,7 @@
 const Header = () => {
 
     return (<div className="flex justify-center">
-        <p className="text-xl font-bold"> FairShare</p>
+        <p className="text-3xl font-bold"> FairShare</p>
     </div>);
 
 }
