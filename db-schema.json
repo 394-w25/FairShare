@@ -1,22 +1,15 @@
 {
     "users": {
       "3gyFQLDBW2PTTfIBIOfFHYlgeeP2": {
-        "email": "josephshim2026@u.northwestern.edu",
-        "groups": {
-            "0": "46662345-d2f4-472f-baeb-a3f1f42d310f"
-        }
+        "email": "josephshim2026@u.northwestern.edu"
       },
 
       "8oWKLqynERR8itQe10vM8kSoyG92": {
-        "email": "patrick.chen0459@gmail.com",
-        "groups": false
+        "email": "patrick.chen0459@gmail.com"
       },
 
       "9IxZZSvFRghSgM8D7CboImkHd6k1": {
-        "email": "patrickchen2025@u.northwestern.edu",
-        "groups": {
-            "0": "46662345-d2f4-472f-baeb-a3f1f42d310f"
-        }
+        "email": "patrickchen2025@u.northwestern.edu"
       }
 
     },
