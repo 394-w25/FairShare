@@ -24,7 +24,7 @@ const NewGroupModal = ({ users, isOpen, setIsOpen}) => {
         const groupObj = {}
         group.forEach((email, index) => {groupObj[index] = email});
         update(groupObj);
-        nav(`/scan/${groupId}`);
+        nav(`/upload/${groupId}`);
         setIsOpen(false);
     }
 

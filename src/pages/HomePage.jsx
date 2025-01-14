@@ -64,7 +64,7 @@ const HomePage = () => {
         <h2 className="text-lg self-start ml-2">Groups</h2>
 
         <div className="flex flex-col border-2 border-gray-300 rounded-lg pt-2 gap-y-2 overflow-auto h-[525px] w-11/12">
-            {groupsUserIsIn.map(([groupId, group], index) => <Link to={`/scan/${groupId}`} key={index}> <GroupCard index={index} usersInGroup={group} /> </Link>)}
+            {groupsUserIsIn.map(([groupId, group], index) => <Link to={`/upload/${groupId}`} key={index}> <GroupCard index={index} usersInGroup={group} /> </Link>)}
         </div>
 
         <button className="w-56 p-2 border-2 border-black bg-black text-white mt-auto mb-2" 
