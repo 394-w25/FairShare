@@ -1,17 +1,85 @@
 import { useState } from 'react';
 
+
 const UploadPage = () => {
 
     const [imagePreview, setImagePreview] = useState(null);
     const [numberOfPeople, setNumberOfPeople] = useState(0);
+    // let base64String;
+    const [base64String, setBase64String] = useState(null);
 
     const handleFileChange = (event) => {
         if (event.target.files && event.target.files.length > 0) {
             const file = event.target.files[0];
             const previewURL = URL.createObjectURL(file);
             setImagePreview(previewURL);  // Set image preview URL
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                const string = reader.result.split(',')[1]; // Remove the data URL prefix
+                setBase64String(string);
+            };
+            reader.readAsDataURL(file);
         }
     };
+
+    async function callOpenAI() {
+        try {
+            console.log('calling open ai api')
+            const response = await fetch(apiUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${apiKey}`,
+                },
+                body: JSON.stringify({
+                    model: 'gpt-4o-mini', // Specify the model you're using
+                    messages: [
+                        {
+                            role: 'user',
+                            content: [
+                                {
+                                    type: 'text',
+                                    text: 'What is in this image?',
+                                },
+                                {
+                                    type: 'image_url',
+                                    image_url: {
+                                        url: `data:image/jpeg;base64,${base64String}`,
+                                    },
+                                },
+                            ],
+                        },
+                    ],
+                    max_tokens: 300,
+                }),
+            });
+
+            const data = await response.json();
+            console.log('OpenAI API Response:', data);
+            return data;
+        } catch (error) {
+            console.error('Error calling OpenAI API:', error);
+        }
+    }
+
+    const handleSplitEvenly = () => {
+        console.log(base64String);
+        if (!imagePreview || !base64String) {
+            return;
+        }
+
+        callOpenAI();
+        // const reader = new FileReader();
+        // reader.onloadend = () => {
+        //     // The result will be the base64-encoded string
+        //     const base64String = reader.result.split(',')[1]; // Remove the data URL prefix
+        //     console.log(base64String);
+        // };
+        // reader.readAsDataURL(file);
+
+        // callOpenAI()
+    }
+
 
     return (
         // <div className="bg-purple-200">
@@ -40,7 +108,10 @@ const UploadPage = () => {
                     <span className="">FairSharers</span>
                 </div>
                 <div className="flex flex-row justify-between items-center">
-                    <button className="py-2 px-4 rounded-md text-sm font-semibold bg-purple-200 text-purple-700 hover:bg-purple-300">
+                    <button
+                        className="py-2 px-4 rounded-md text-sm font-semibold bg-purple-200 text-purple-700 hover:bg-purple-300"
+                        onClick={() => handleSplitEvenly()}
+                    >
                         Split evenly
                     </button>
                     <button className="py-2 px-4 rounded-md text-sm font-semibold bg-purple-200 text-purple-700 hover:bg-purple-300">
