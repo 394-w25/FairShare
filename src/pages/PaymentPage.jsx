@@ -40,7 +40,7 @@ const PaymentPage = () => {
                
         //     } 
         // });
-        navigate('../ReceiptPage');     
+        navigate('../receipt');     
     }
 
     return (
@@ -50,6 +50,7 @@ const PaymentPage = () => {
             </span>
             {/* <p>{props.person.name}</p>
             <p>{props.cost}</p> */}
+            <p>Enter phone number</p>
             <input onChange={onPhoneNumberChanged}></input>
             {!isNumberValid && <p>This number is invalid</p>}
             <button 
@@ -60,7 +61,7 @@ const PaymentPage = () => {
             </button>
             
             <button 
-                className="bg-purple-500 rounded-lg px-2 py-2 font-semibold text-white text-lg" 
+                className="bg-purple-400 rounded-lg px-2 py-2 font-semibold text-white text-lg" 
                 onClick={() => handleNext(number)}
             >
                 Next
