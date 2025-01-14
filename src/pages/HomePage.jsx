@@ -1,6 +1,7 @@
 import { useContext, useState } from 'react'; 
 import { userContext } from '../components/Dispatcher';
 import { useDbData, useDbUpdate, signOut } from "../utilities/firebase"
+import { Link } from 'react-router-dom';
 import Header from '../components/Header';
 import NewGroupModal from '../components/NewGroupModal';
 import GroupCard from '../components/GroupCard';
@@ -46,8 +47,8 @@ const HomePage = () => {
 
 
     //List of all groups the signed-in user is in 
-    const groupsUserIsIn = Object.values(groups)
-                                .filter((group) => {
+    const groupsUserIsIn = Object.entries(groups)
+                                .filter(([groupId, group]) => {
                                     const listOfUsers = Object.values(group);
                                     return listOfUsers.includes(user.email);
                                 })
@@ -62,8 +63,8 @@ const HomePage = () => {
         
         <h2 className="text-lg self-start ml-2">Groups</h2>
 
-        <div className="flex flex-col gap-y-2 overflow-auto h-[525px] w-10/12">
-            {groupsUserIsIn.map((group, index) => <GroupCard key={index} index={index} usersInGroup={group} />)}
+        <div className="flex flex-col border-2 border-gray-300 rounded-lg pt-2 gap-y-2 overflow-auto h-[525px] w-11/12">
+            {groupsUserIsIn.map(([groupId, group], index) => <Link to={`/scan/${groupId}`} key={index}> <GroupCard index={index} usersInGroup={group} /> </Link>)}
         </div>
 
         <button className="w-56 p-2 border-2 border-black bg-black text-white mt-auto mb-2" 
