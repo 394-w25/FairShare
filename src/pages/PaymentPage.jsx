@@ -40,7 +40,7 @@ const PaymentPage = () => {
                
         //     } 
         // });
-        navigate('/ReceiptPage');     
+        navigate('../ReceiptPage');     
     }
 
     return (
