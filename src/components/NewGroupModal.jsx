@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import { useDbUpdate } from '../utilities/firebase';
+import { useNavigate } from 'react-router';
 import SearchBar from './SearchBar';
 import SearchUserCard from './UserCard/SearchUserCard';
 import GroupUserCard from './UserCard/GroupUserCard';
@@ -12,6 +13,7 @@ const NewGroupModal = ({ users, isOpen, setIsOpen}) => {
     const [group, setGroup] = useState([]);
     const [groupId, setGroupId] = useState(uuidv4());
     const [update, result] = useDbUpdate(`groups/${groupId}`);
+    const nav = useNavigate();
 
     console.log(groupId)
 
@@ -22,6 +24,7 @@ const NewGroupModal = ({ users, isOpen, setIsOpen}) => {
         const groupObj = {}
         group.forEach((email, index) => {groupObj[index] = email});
         update(groupObj);
+        nav(`/scan/${groupId}`);
         setIsOpen(false);
     }
 
