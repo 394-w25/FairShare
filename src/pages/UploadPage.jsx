@@ -1,12 +1,17 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 
 const UploadPage = () => {
-
     const [imagePreview, setImagePreview] = useState(null);
     const [numberOfPeople, setNumberOfPeople] = useState(0);
     // let base64String;
+    
+    let apiUrl = "https://api.openai.com/v1/chat/completions";
+    const [jsonData, setJsonData] = useState(null);
     const [base64String, setBase64String] = useState(null);
+
+    const navigate = useNavigate();
 
     const handleFileChange = (event) => {
         if (event.target.files && event.target.files.length > 0) {
@@ -25,11 +30,11 @@ const UploadPage = () => {
     async function callOpenAI() {
         try {
             console.log('calling open ai api')
-            const response = await fetch(apiUrl, {
+            const response = await fetch('https://api.openai.com/v1/chat/completions', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${apiKey}`,
+                    'Authorization': `Bearer`,
                 },
                 body: JSON.stringify({
                     model: 'gpt-4o-mini', // Specify the model you're using
@@ -39,7 +44,7 @@ const UploadPage = () => {
                             content: [
                                 {
                                     type: 'text',
-                                    text: 'What is in this image?',
+                                    text: 'This is a receipt. Please extract the items on the receipt, then a colon separating it from its quantities and unit prices. Put the extracted values and the total cost, tax amount, and final bill with tax included into a JSON format. For the items, list it in this format: item_list: [ {id: 1, name: 'salmon roll', price: 12.95, quantity: 3}, {id: 2, name:'california roll', price: 8.95, quantity: 2}, ...]',
                                 },
                                 {
                                     type: 'image_url',
@@ -55,8 +60,11 @@ const UploadPage = () => {
             });
 
             const data = await response.json();
-            console.log('OpenAI API Response:', data);
-            return data;
+            console.log(data['choices'][0]['message']['content'])
+            const jsonResponse = data['choices'][0]['message']['content'];
+            //setJsonData(jsonResponse);
+            //console.log('OpenAI API Response:', jsonResponse);
+            return jsonResponse;
         } catch (error) {
             console.error('Error calling OpenAI API:', error);
         }
@@ -68,7 +76,8 @@ const UploadPage = () => {
             return;
         }
 
-        callOpenAI();
+        const receiptData = callOpenAI();
+        navigate('/receipt', { state: { receiptData }});
         // const reader = new FileReader();
         // reader.onloadend = () => {
         //     // The result will be the base64-encoded string
