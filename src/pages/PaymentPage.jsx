@@ -43,15 +43,20 @@ const PaymentPage = () => {
                
         //     } 
         // });
-        navigate('../receipt', {   state: {
-            user: {
-                ...state.user
-            },
-            currentIndex: state.currentIndex + 1
+
+        if (state.currentIndex == state.user.people.length - 1) {
+            navigate('../')
+        } else {
+
+            navigate('../receipt', {   state: {
+                user: {
+                    ...state.user
+                },
+                currentIndex: state.currentIndex + 1
+            }}
+            );     
+            console.log("Navigate back to receipt");
         }}
-        );     
-        console.log("Navigate back to receipt");
-    }
 
     return (
         <div className="w-screen h-screen bg-purple-100 flex flex-col justify-center items-center gap-4">
