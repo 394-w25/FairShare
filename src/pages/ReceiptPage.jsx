@@ -2,11 +2,13 @@
 import { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 
-const ReceiptPage = (props, currentIndex) => {
+const ReceiptPage = () => {
     // currently using mock User input 
     const navigate = useNavigate();
-    const items = props.item_list || [];
-    const taxAmount = props.tax || 0;
+    const { state } = useLocation();
+    console.log(state);
+    const items = state.receiptData.item_list || [];
+    const taxAmount = state.receiptData.tax || 0;
     const personTax = items.length > 0 ? taxAmount / items.length : 0;
     const [totalCost, setTotalCost] = useState(0);
     const [quantities, setQuantities] = useState(Array(items.length).fill(0));
@@ -40,7 +42,8 @@ const ReceiptPage = (props, currentIndex) => {
         setTotalCost(prevCount => prevCount + personTax);
         console.log('Message Sent');
         navigate('../pay', { state: {
-            user: state.user,
+            receiptData: state.receiptData,
+            members: state.members,
             cost: totalCost,
             currentIndex: state.currentIndex
         }
@@ -50,7 +53,7 @@ const ReceiptPage = (props, currentIndex) => {
     return (
         <div className="p-4">
             <div className="text-3xl text-center font-bold mb-4">
-            {state.user.people[state.currentIndex]}
+            {state.members[state.currentIndex]}
             </div>
             <div className="flex flex-col">
             <span className="text-xl text-center font-medium">Total Cost</span>
@@ -83,7 +86,7 @@ const ReceiptPage = (props, currentIndex) => {
                     onClick={sendMessage}
                     className="bg-stone-900 rounded-lg text-white px-6 py-3 rounded hover:bg-purple-800"
                 >
-                    Send {state.user.people.currentIndex} a Message
+                    Send {state.members[state.currentIndex]} a Message
                 </button>
 
                 </div>

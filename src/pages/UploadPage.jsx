@@ -1,15 +1,32 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-
+import { useContext } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
+import { useDbData } from '../utilities/firebase';
+import { userContext } from '../components/Dispatcher';
 
 const UploadPage = () => {
+
+    const { groupId }= useParams();
+
     const [imagePreview, setImagePreview] = useState(null);
     const [numberOfPeople, setNumberOfPeople] = useState(0);
+        const user = useContext(userContext);
+    
     // let base64String;
     
     let apiUrl = "https://api.openai.com/v1/chat/completions";
     const [jsonData, setJsonData] = useState(null);
     const [base64String, setBase64String] = useState(null);
+
+    const [members, membersError] = useDbData(`/groups/${groupId}`);
+
+    console.log(members);
+
+    if (membersError) { 
+        return <div className="h-full w-full flex justify-center items-center"> 
+            <h1 className="text-red-500" >Error loading data {membersError.toString()}</h1> 
+        </div> ;
+    }
 
     const navigate = useNavigate();
 
@@ -34,7 +51,7 @@ const UploadPage = () => {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': `Bearer`,
+                    'Authorization': `Bearer ${import.meta.env.VITE_OPENAI_API_KEY}`,
                 },
                 body: JSON.stringify({
                     model: 'gpt-4o-mini', // Specify the model you're using
@@ -61,23 +78,35 @@ const UploadPage = () => {
 
             const data = await response.json();
             console.log(data['choices'][0]['message']['content'])
-            const jsonResponse = data['choices'][0]['message']['content'];
+            const stringResponse = data['choices'][0]['message']['content'];
+            const match = stringResponse.match(/\{[\s\S]*\}/); // Regular expression to match content inside curly brackets
+            const jsonContent = match ? JSON.parse(match[0]) : null; // Extract the match if it exists
+            console.log(jsonContent)
+            const parsedJson = {
+                item_list: jsonContent.item_list,
+                mainUser: {name: user.email},
+                people: members,
+                tax: jsonContent.tax,
+            }
+            console.log(parsedJson)
+
+            setJsonData(parsedJson)
+
             //setJsonData(jsonResponse);
             //console.log('OpenAI API Response:', jsonResponse);
-            return jsonResponse;
+            return parsedJson;
         } catch (error) {
             console.error('Error calling OpenAI API:', error);
         }
     }
 
     const handleSplitEvenly = () => {
-        console.log(base64String);
         if (!imagePreview || !base64String) {
             return;
         }
 
         const receiptData = callOpenAI();
-        navigate('/receipt', { state: { receiptData }});
+        navigate('/receipt', { state: { receiptData, members, currentIndex: 0 }});
         // const reader = new FileReader();
         // reader.onloadend = () => {
         //     // The result will be the base64-encoded string
@@ -87,6 +116,16 @@ const UploadPage = () => {
         // reader.readAsDataURL(file);
 
         // callOpenAI()
+    }
+
+    const handleSplitByItem = async () => {
+        if (!imagePreview || !base64String) {
+            return;
+        }
+
+        const receiptData = await callOpenAI();
+        navigate('/receipt', { state: { receiptData, members, currentIndex: 0 }});
+
     }
 
 
@@ -112,10 +151,6 @@ const UploadPage = () => {
                 />
             </div>
             <div className="flex flex-col w-full gap-1">
-                <div className="flex flex-row gap-1 text-lg justify-center items-center font-semibold">
-                    <input type="number" value={numberOfPeople} onChange={(e) => setNumberOfPeople(e.target.value)} className="w-7 bg-purple-200 h-7 text-center rounded" />
-                    <span className="">FairSharers</span>
-                </div>
                 <div className="flex flex-row justify-between items-center">
                     <button
                         className="py-2 px-4 rounded-md text-sm font-semibold bg-purple-200 text-purple-700 hover:bg-purple-300"
@@ -123,7 +158,8 @@ const UploadPage = () => {
                     >
                         Split evenly
                     </button>
-                    <button className="py-2 px-4 rounded-md text-sm font-semibold bg-purple-200 text-purple-700 hover:bg-purple-300">
+                    <button className="py-2 px-4 rounded-md text-sm font-semibold bg-purple-200 text-purple-700 hover:bg-purple-300"
+                        onClick={() => handleSplitByItem()}>
                         Split by item
                     </button>
                 </div>
