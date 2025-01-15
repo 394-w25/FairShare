@@ -15,6 +15,9 @@ const HomePage = () => {
     const [users, usersError ] = useDbData('/users');
     const [groups, groupsError] = useDbData(`/groups`);
 
+<<<<<<< HEAD
+    return (<p> Logged In Page</p>); 
+=======
 
     if (dataError) { 
         return <div className="h-full w-full flex justify-center items-center"> 
@@ -76,6 +79,7 @@ const HomePage = () => {
 
         
     </div>); 
+>>>>>>> fd59bdeac9ab40fd66d122096524b569b366fae3
 
 }
 
