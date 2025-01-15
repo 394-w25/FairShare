@@ -3,9 +3,11 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 const ReceiptPage = (props, currentIndex) => {
-    // currently using mock User input
+    // currently using mock User input 
     const navigate = useNavigate();
-    const items = props.item_list
+    const items = props.item_list || [];
+    const taxAmount = props.tax || 0;
+    const personTax = items.length > 0 ? taxAmount / items.length : 0;
     const [totalCost, setTotalCost] = useState(0);
     const [quantities, setQuantities] = useState(Array(items.length).fill(0));
     const incrementTotalCost = (price) => {
@@ -35,6 +37,7 @@ const ReceiptPage = (props, currentIndex) => {
           });
       };
     const sendMessage = () => {
+        setTotalCost(prevCount => prevCount + personTax);
         console.log('Message Sent');
         navigate('../pay', { state: {
             people: props.people, 
