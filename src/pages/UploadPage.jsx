@@ -20,6 +20,7 @@ const UploadPage = () => {
 
     const [members, membersError] = useDbData(`/groups/${groupId}`);
 
+
     console.log(members);
 
     if (membersError) { 
@@ -28,7 +29,7 @@ const UploadPage = () => {
         </div> ;
     }
 
-    const navigate = useNavigate();
+  
 
     const handleFileChange = (event) => {
         if (event.target.files && event.target.files.length > 0) {
@@ -151,14 +152,14 @@ const UploadPage = () => {
                 />
             </div>
             <div className="flex flex-col w-full gap-1">
-                <div className="flex flex-row justify-between items-center">
-                    <button
+                <div className="flex flex-row justify-center items-center">
+                    {/* <button
                         className="py-2 px-4 rounded-md text-sm font-semibold bg-purple-200 text-purple-700 hover:bg-purple-300"
                         onClick={() => handleSplitEvenly()}
                     >
                         Split evenly
-                    </button>
-                    <button className="py-2 px-4 rounded-md text-sm font-semibold bg-purple-200 text-purple-700 hover:bg-purple-300"
+                    </button> */}
+                    <button className="py-2 px-4 rounded-md text-sm font-semibold bg-purple-200 text-purple-700 hover:bg-purple-300 "
                         onClick={() => handleSplitByItem()}>
                         Split by item
                     </button>

@@ -48,7 +48,16 @@ const ReceiptPage = () => {
             currentIndex: state.currentIndex
         }
     });
-      };
+    };
+
+    if (state.members[state.currentIndex] === state.receiptData.mainUser.name) {
+        navigate('../receipt', {   state: {
+            receiptData: state.receiptData,
+            members: state.members,
+            currentIndex: state.currentIndex + 1
+        }}
+        );
+    }
 
     return (
         <div className="p-4">
