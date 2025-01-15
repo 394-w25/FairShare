@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route, Navigate  } from "react-router-dom";
 import { useAuthState } from "../utilities/firebase";
 import LandingPage from '../pages/LandingPage';
 import HomePage from '../pages/HomePage';
+import UploadPage from '../pages/UploadPage';
 import ReceiptPage from '../pages/ReceiptPage';
 import UploadReceiptPage from "../pages/UploadReceiptPage";
 import PaymentPage from "../pages/PaymentPage";
@@ -22,6 +23,7 @@ const Dispatcher = () => {
         mainUser: {name:'Jerry'},
         people : ['Amy', 'Johnny', 'Katie']
     };
+
     const [user, loading] = useAuthState(); 
 
     if(loading) {
@@ -30,6 +32,7 @@ const Dispatcher = () => {
 
     return (user ? 
 
+
     <userContext.Provider value={user}>
         <BrowserRouter> 
             <Routes>
@@ -37,6 +40,7 @@ const Dispatcher = () => {
                 <Route path="/receipt" element={<ReceiptPage />} /> 
                 <Route path="/pay" element={<PaymentPage />} />
                 <Route path="/test" element={<TestPage />} />
+                <Route path="/upload/:groupId" element={<UploadPage />} /> 
             </Routes>
         
         </BrowserRouter>
