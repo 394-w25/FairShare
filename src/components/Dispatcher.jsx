@@ -6,6 +6,7 @@ import HomePage from '../pages/HomePage';
 import ReceiptPage from '../pages/ReceiptPage';
 import UploadReceiptPage from "../pages/UploadReceiptPage";
 import PaymentPage from "../pages/PaymentPage";
+import TestPage from "../pages/TestPage";
 
 
 export const userContext = createContext(); 
@@ -33,8 +34,9 @@ const Dispatcher = () => {
         <BrowserRouter> 
             <Routes>
                 <Route path="/" element={<HomePage />} /> 
-                <Route path="/receipt" element={<ReceiptPage {...mockUser} currentIndex={0}/>} /> 
+                <Route path="/receipt" element={<ReceiptPage />} /> 
                 <Route path="/pay" element={<PaymentPage />} />
+                <Route path="/test" element={<TestPage />} />
             </Routes>
         
         </BrowserRouter>

@@ -4,7 +4,7 @@ import { useState } from 'react';
 const PaymentPage = () => {
 // const PaymentPage = () => {
     const { state } = useLocation();
-    console.log(state.currentIndex)
+    console.log(state.user.people)
 
     const navigate = useNavigate();
 
@@ -32,7 +32,7 @@ const PaymentPage = () => {
         else{
             setIsNumberValid(true)
 
-            window.location.href = 'sms:+1' + phone_num + '?body=Hi ' + state.people[currentIndex] + '! You are being requested $' + state.cost + ' from ' + state.userName + ' from FairShare.';
+            window.location.href = 'sms:+1' + phone_num + '?body=Hi ' + state.user.people[state.currentIndex] + '! You are being requested $' + state.cost + ' from ' + state.user.mainUser.name + ' from FairShare.';
     
         }
     };
@@ -43,13 +43,13 @@ const PaymentPage = () => {
                
         //     } 
         // });
-        // navigate('../receipt', {   state: {
-        //     people: state.people,
-        //     itemList: props.itemList,
-        //     mainUser: props.mainUser,
-        //     current_index: currentIndex + 1
-        // }}
-        // );     
+        navigate('../receipt', {   state: {
+            user: {
+                ...state.user
+            },
+            currentIndex: state.currentIndex + 1
+        }}
+        );     
         console.log("Navigate back to receipt");
     }
 
@@ -58,7 +58,7 @@ const PaymentPage = () => {
             <span className="font-semibold text-3xl">
                 FairShare
             </span>
-            <p>{state.people[currentIndex]}</p>
+            <p>{state.user.people[state.currentIndex]}</p>
             <p>{state.cost}</p>
             <p>Enter phone number</p>
             <input onChange={onPhoneNumberChanged}></input>
