@@ -2,7 +2,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-const ReceiptPage = (props, current_index) => {
+const ReceiptPage = (props, currentIndex) => {
     // currently using mock User input
     const navigate = useNavigate();
     const items = props.item_list
@@ -36,11 +36,11 @@ const ReceiptPage = (props, current_index) => {
       };
     const sendMessage = () => {
         console.log('Message Sent');
-        navigate('./PaymentPage', { state: {
+        navigate('../pay', { state: {
             people: props.people, 
             userName: props.mainUser.userName, 
-            cost: total_cost,
-            currentIndex: current_index
+            cost: totalCost,
+            currentIndex: currentIndex
         }
     });
       };
@@ -48,7 +48,7 @@ const ReceiptPage = (props, current_index) => {
     return (
         <div className="p-4">
             <div className="text-3xl text-center font-bold mb-4">
-            {props.people[current_index]}
+            {props.people[currentIndex]}
             </div>
             <div className="flex flex-col">
             <span className="text-xl text-center font-medium">Total Cost</span>
@@ -81,7 +81,7 @@ const ReceiptPage = (props, current_index) => {
                     onClick={sendMessage}
                     className="bg-stone-900 rounded-lg text-white px-6 py-3 rounded hover:bg-purple-800"
                 >
-                    Send {props.people.current_index} a Message
+                    Send {props.people.currentIndex} a Message
                 </button>
 
                 </div>

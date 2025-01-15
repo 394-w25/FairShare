@@ -33,7 +33,7 @@ const Dispatcher = () => {
         <BrowserRouter> 
             <Routes>
                 <Route path="/" element={<HomePage />} /> 
-                <Route path="/receipt" element={<ReceiptPage {...mockUser} current_index={0}/>} /> 
+                <Route path="/receipt" element={<ReceiptPage {...mockUser} currentIndex={0}/>} /> 
                 <Route path="/pay" element={<PaymentPage />} />
             </Routes>
         
