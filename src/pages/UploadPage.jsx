@@ -1,8 +1,8 @@
-import { useState } from 'react';
-import { useContext } from 'react';
+import { useState, useContext, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useDbData } from '../utilities/firebase';
 import { userContext } from '../components/Dispatcher';
+import CameraComponent from '../components/CameraComponent';
 
 const UploadPage = () => {
 
@@ -10,13 +10,14 @@ const UploadPage = () => {
 
     const [imagePreview, setImagePreview] = useState(null);
     const [numberOfPeople, setNumberOfPeople] = useState(0);
-        const user = useContext(userContext);
+    const user = useContext(userContext);
     
     // let base64String;
     
     let apiUrl = "https://api.openai.com/v1/chat/completions";
     const [jsonData, setJsonData] = useState(null);
     const [base64String, setBase64String] = useState(null);
+    const [photoTaken, setPhotoTaken] = useState(null);
 
     const [members, membersError] = useDbData(`/groups/${groupId}`);
 
@@ -47,7 +48,8 @@ const UploadPage = () => {
 
     async function callOpenAI() {
         try {
-            console.log('calling open ai api')
+            console.log('calling openai', base64String)
+
             const response = await fetch('https://api.openai.com/v1/chat/completions', {
                 method: 'POST',
                 headers: {
@@ -102,7 +104,7 @@ const UploadPage = () => {
     }
 
     const handleSplitEvenly = () => {
-        if (!imagePreview || !base64String) {
+        if (!base64String) {
             return;
         }
 
@@ -120,14 +122,23 @@ const UploadPage = () => {
     }
 
     const handleSplitByItem = async () => {
-        if (!imagePreview || !base64String) {
+        console.log('hey')
+        if (!base64String) {
             return;
         }
+        console.log('yo')
 
         const receiptData = await callOpenAI();
         navigate('/receipt', { state: { receiptData, members, currentIndex: 0 }});
 
     }
+
+    useEffect(() => {
+        if (!!photoTaken) {
+            console.log(photoTaken);
+            setBase64String(photoTaken.slice(23));
+        }   
+    }, [photoTaken, setPhotoTaken]);
 
 
     return (
@@ -140,9 +151,10 @@ const UploadPage = () => {
                         <img src={imagePreview} alt="Selected" className="w-full h-auto object-cover" />
                     </div>
                 ) : (
-                    <div className="mt-4 w-full h-4/5 object-cover rounded-md border border-dashed border-gray-400 flex justify-center items-center text-gray-600">
-                        Choose file...
-                    </div>
+                    // <div className="mt-4 w-full h-4/5 object-cover rounded-md border border-dashed border-gray-400 flex justify-center items-center text-gray-600">
+                    //     Choose file...
+                    // </div>
+                    <CameraComponent photo={photoTaken} setPhoto={setPhotoTaken} />
                 )}
                 <input
                     type="file"
