@@ -1,21 +1,38 @@
-import { useRef, useState, useEffect } from 'react';
+import { useRef, useEffect } from 'react';
 
 
 const CameraComponent = ({ photo, setPhoto }) => {
     const videoRef = useRef(null);
     const canvasRef = useRef(null);
-    // const [photo, setPhoto] = useState(null);
+
+    const checkDevices = async () => {
+        const devices = await navigator.mediaDevices.enumerateDevices();
+        const videoInputs = devices.filter((device) => device.kind === "videoinput");
+        console.log(videoInputs);
+        const hasRearCamera = videoInputs.some((device) =>
+            device.label.toLowerCase().includes("back") || 
+            device.label.toLowerCase().includes("rear") || 
+            device.label.toLowerCase().includes("environment") || 
+            device.label.toLowerCase().includes("phone")
+        );
+        
+        return hasRearCamera;
+    }
 
     const startCamera = async () => {
         try {
-            console.log('you')
-            const stream = await navigator.mediaDevices.getUserMedia({ video: true });
-            console.log('e')
+            
+            const hasRearCamera = checkDevices();
+            console.log(hasRearCamera);
+            const stream = await navigator.mediaDevices.getUserMedia({ 
+                video: {facingMode: hasRearCamera ? "environment" : "user"}
+            });
             if (videoRef.current) {
                 videoRef.current.srcObject = stream;
                 videoRef.current.play();
             }
         } catch (err) {
+            console.log('e');
             console.error("Error accessing webcam:", err);
         }
     }
