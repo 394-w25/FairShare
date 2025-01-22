@@ -7,10 +7,11 @@ import { userContext } from '../components/Dispatcher';
 const UploadPage = () => {
 
     const { groupId }= useParams();
+    const navigate = useNavigate();
 
     const [imagePreview, setImagePreview] = useState(null);
     const [numberOfPeople, setNumberOfPeople] = useState(0);
-        const user = useContext(userContext);
+    const user = useContext(userContext);
     
     // let base64String;
     
@@ -78,6 +79,7 @@ const UploadPage = () => {
             });
 
             const data = await response.json();
+            console.log(data)
             console.log(data['choices'][0]['message']['content'])
             const stringResponse = data['choices'][0]['message']['content'];
             const match = stringResponse.match(/\{[\s\S]*\}/); // Regular expression to match content inside curly brackets
