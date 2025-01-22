@@ -22,7 +22,7 @@ const CameraComponent = ({ photo, setPhoto }) => {
     const startCamera = async () => {
         try {
             
-            const hasRearCamera = checkDevices();
+            const hasRearCamera = await checkDevices();
             console.log(hasRearCamera);
             const stream = await navigator.mediaDevices.getUserMedia({ 
                 video: {facingMode: hasRearCamera ? "environment" : "user"}
