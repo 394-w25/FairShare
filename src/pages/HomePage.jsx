@@ -2,12 +2,14 @@ import { useContext, useState } from 'react';
 import { userContext } from '../components/Dispatcher';
 import { useDbData, useDbUpdate, signOut } from "../utilities/firebase"
 import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import Header from '../components/Header';
 import NewGroupModal from '../components/NewGroupModal';
 import GroupCard from '../components/GroupCard';
 
 
 const HomePage = () => {
+    const nav = useNavigate(); 
     const user = useContext(userContext);
     const [isOpen, setIsOpen] = useState(false); 
     const [data, dataError] = useDbData(`/users/${user.uid}`);
@@ -67,10 +69,18 @@ const HomePage = () => {
             {groupsUserIsIn.map(([groupId, group], index) => <Link to={`/upload/${groupId}`} key={index}> <GroupCard index={index} usersInGroup={group} /> </Link>)}
         </div>
 
-        <button className="w-56 p-2 border-2 border-black bg-black text-white mt-auto mb-2" 
-                onClick={() => setIsOpen(true)}> 
-            Create New Group 
-        </button>
+        <div className="flex space-x-32 mt-auto">
+            <button className="w-56 p-2 border-2 border-black bg-black text-white mt-auto mb-2" 
+                    onClick={() => setIsOpen(true)}> 
+                Create New Group 
+            </button>
+
+            <button className="w-56 p-2 border-2 border-black bg-black text-white mt-auto mb-2"
+                    onClick={() => nav('/requests')}>
+                Incoming Requests 
+            </button>
+        </div>
+
 
         {isOpen && <NewGroupModal users={listOfUsers} isOpen={isOpen} setIsOpen={setIsOpen}/> }
 

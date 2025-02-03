@@ -1,9 +1,12 @@
-
-import { useState } from 'react';
+import { useState, useContext, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { userContext } from '../components/Dispatcher';
+import { useDbUpdate } from '../utilities/firebase';
+import { v4 as uuidv4 } from 'uuid';
+
 
 const ReceiptPage = () => {
-    // currently using mock User input 
+    const user = useContext(userContext);    
     const navigate = useNavigate();
     const { state } = useLocation();
     console.log(state);
@@ -11,7 +14,12 @@ const ReceiptPage = () => {
     const taxAmount = state.receiptData.tax || 0;
     const personTax = items.length > 0 ? taxAmount / items.length : 0;
     const [totalCost, setTotalCost] = useState(0);
+    const [currentIndex, setCurrentIndex] = useState(0);
+    const [requestId, setRequestId] = useState(uuidv4());
     const [quantities, setQuantities] = useState(Array(items.length).fill(0));
+    const [update, result] = useDbUpdate(`/requests/${requestId}`);
+    console.log(requestId);
+
     const incrementTotalCost = (price) => {
         setTotalCost(prevCount => prevCount + price);
     };
@@ -38,31 +46,28 @@ const ReceiptPage = () => {
             return newQuantities;
           });
       };
-    const sendMessage = () => {
-        setTotalCost(prevCount => prevCount + personTax);
-        console.log('Message Sent');
-        navigate('../pay', { state: {
-            receiptData: state.receiptData,
-            members: state.members,
-            cost: totalCost,
-            currentIndex: state.currentIndex
-        }
-    });
-    };
 
-    if (state.members[state.currentIndex] === state.receiptData.mainUser.name) {
-        navigate('../receipt', {   state: {
-            receiptData: state.receiptData,
-            members: state.members,
-            currentIndex: state.currentIndex + 1
-        }}
-        );
+    const sendMessage = () => {
+        const request = {
+            message: `${user.displayName} is requesting ${totalCost} from you`,
+            to: state.members[currentIndex]
+        };
+
+        update(request);
+        currentIndex === state.members.length - 1 ? navigate('/') : setCurrentIndex(prevCurrentIndex => prevCurrentIndex + 1);
     }
+
+    useEffect( () => {
+        setTotalCost(0);
+        setRequestId(uuidv4());
+        setQuantities(Array(items.length).fill(0));
+    } , [currentIndex]);
+
 
     return (
         <div className="p-4">
             <div className="text-3xl text-center font-bold mb-4">
-            {state.members[state.currentIndex]}
+            {state.members[currentIndex]}
             </div>
             <div className="flex flex-col">
             <span className="text-xl text-center font-medium">Total Cost</span>
@@ -93,9 +98,9 @@ const ReceiptPage = () => {
                 <div className="flex justify-center mt-8">
                 <button 
                     onClick={sendMessage}
-                    className="bg-stone-900 rounded-lg text-white px-6 py-3 rounded hover:bg-purple-800"
+                    className="bg-stone-900 rounded-lg text-white px-6 py-3 hover:bg-purple-800"
                 >
-                    Send {state.members[state.currentIndex]} a Message
+                    Send {state.members[currentIndex]} a Message
                 </button>
 
                 </div>

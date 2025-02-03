@@ -12,9 +12,7 @@ const UploadPage = () => {
     const [imagePreview, setImagePreview] = useState(null);
     const [numberOfPeople, setNumberOfPeople] = useState(0);
     const user = useContext(userContext);
-    
-    // let base64String;
-    
+        
     let apiUrl = "https://api.openai.com/v1/chat/completions";
     const [jsonData, setJsonData] = useState(null);
     const [base64String, setBase64String] = useState(null);
@@ -32,7 +30,6 @@ const UploadPage = () => {
     }
 
   
-
     const handleFileChange = (event) => {
         if (event.target.files && event.target.files.length > 0) {
             const file = event.target.files[0];
