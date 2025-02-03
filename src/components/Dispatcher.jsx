@@ -5,6 +5,7 @@ import LandingPage from '../pages/LandingPage';
 import HomePage from '../pages/HomePage';
 import UploadPage from '../pages/UploadPage';
 import ReceiptPage from '../pages/ReceiptPage';
+import RequestsPage from '../pages/RequestsPage';
 
 
 export const userContext = createContext(); 
@@ -25,8 +26,8 @@ const Dispatcher = () => {
                 <Route path="/" element={<HomePage />} /> 
                 <Route path="/receipt" element={<ReceiptPage />} /> 
                 <Route path="/upload/:groupId" element={<UploadPage />} /> 
+                <Route path="/requests" element={<RequestsPage/>} />
             </Routes>
-        
         </BrowserRouter>
     </userContext.Provider>
 
