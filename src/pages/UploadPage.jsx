@@ -1,8 +1,9 @@
 import { useState, useContext, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { useDbData } from '../utilities/firebase';
+import { useDbData, useDbUpdate } from '../utilities/firebase';
 import { userContext } from '../components/Dispatcher';
 import CameraComponent from '../components/CameraComponent';
+import { v4 as uuidv4 } from 'uuid';
 
 const UploadPage = () => {
 
@@ -19,6 +20,9 @@ const UploadPage = () => {
     const [photoTaken, setPhotoTaken] = useState(null);
 
     const [members, membersError] = useDbData(`/groups/${groupId}`);
+
+    const [updateDb] = useDbUpdate();
+
 
 
     console.log(members);
@@ -102,22 +106,32 @@ const UploadPage = () => {
         }
     }
 
-    const handleSplitEvenly = () => {
+    const handleSplitEvenly = async () => {
         if (!base64String) {
+            console.error("No receipt image uploaded.");
             return;
         }
 
         const receiptData = callOpenAI();
-        navigate('/receipt', { state: { receiptData, members, currentIndex: 0 }});
-        // const reader = new FileReader();
-        // reader.onloadend = () => {
-        //     // The result will be the base64-encoded string
-        //     const base64String = reader.result.split(',')[1]; // Remove the data URL prefix
-        //     console.log(base64String);
-        // };
-        // reader.readAsDataURL(file);
+        if (!receiptData || !receiptData.item_list) {
+            console.error("Failed to process receipt data.");
+            return;
+        }    
+        
+        const totalCost = receiptData.item_list.reduce((sum, item) => sum + item.price * item.quantity, 0) + receiptData.tax;
+        const costPerPerson = totalCost / receiptData.people.length;
 
-        // callOpenAI()
+        members.forEach(member => {
+            if (member != user.email) {
+                const requestID = uuidv4();
+                updateDb(`/requests/${requestID}`, {
+                    message: `${user.displayName} is requesting $${costPerPerson} from you`,
+                    to: member
+                });
+            }
+        });
+        alert("Payment reqests sent successfully!");
+        navigate("/")
     }
 
     const handleSplitByItem = async () => {
@@ -163,13 +177,13 @@ const UploadPage = () => {
                 />
             </div>
             <div className="flex flex-col w-full gap-1">
-                <div className="flex flex-row justify-center items-center">
-                    {/* <button
+                <div className="flex flex-row justify-center items-center gap-x-6">
+                    <button
                         className="py-2 px-4 rounded-md text-sm font-semibold bg-purple-200 text-purple-700 hover:bg-purple-300"
                         onClick={() => handleSplitEvenly()}
                     >
                         Split evenly
-                    </button> */}
+                    </button>
                     <button className="py-2 px-4 rounded-md text-sm font-semibold bg-purple-200 text-purple-700 hover:bg-purple-300 "
                         onClick={() => handleSplitByItem()}>
                         Split by item
