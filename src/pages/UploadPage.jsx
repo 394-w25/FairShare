@@ -1,8 +1,9 @@
 import { useState, useContext, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { useDbData } from '../utilities/firebase';
+import { useDbData, useDbUpdate } from '../utilities/firebase';
 import { userContext } from '../components/Dispatcher';
 import CameraComponent from '../components/CameraComponent';
+import { v4 as uuidv4 } from 'uuid';
 import { useMutation } from '@tanstack/react-query';
 import { callOpenAi } from "../api"
 
@@ -19,6 +20,11 @@ const UploadPage = () => {
     const [photoTaken, setPhotoTaken] = useState(null);
 
     const [members, membersError] = useDbData(`/groups/${groupId}`);
+
+    const [update, result] = useDbUpdate(); 
+
+    // const [update, result] = useDbUpdate(`/requests/${requestId}`);
+
 
 
     console.log(members);
@@ -53,23 +59,70 @@ const UploadPage = () => {
 
 
 
-    const handleSplitEvenly = () => {
+    const handleSplitEvenly = async () => {
         if (!base64String) {
+            console.error('No receipt image uploaded.');
             return;
         }
+        try {
+            // First, let’s validate that we have the receipt data
+            const receiptData = await callOpenAI();
+            if (!receiptData || !receiptData.item_list) {
+                console.error('Failed to process receipt data.');
+                return;
+            }
+            // Calculate the total cost with tax
+            const totalCost = receiptData.item_list.reduce(
+                (sum, item) => sum + (item.price * item.quantity),
+                0
+            ) + (receiptData.tax || 0); // Added fallback for tax
+            // Calculate per-person cost, ensuring it’s a number
+            const costPerPerson = totalCost / (members?.length || 1);
+            // Make sure members exists and is an array
+            if (!Array.isArray(members)) {
+                throw new Error('Members data is not properly formatted');
+            }
+            // Process each member one at a time instead of using Promise.all
+            for (const member of members) {
+                if (member !== user.email) {
+                    const requestID = uuidv4();
+                    // Create a properly structured request object
+                    const requestData = {
+                        [`/requests/${requestID}`]: {
+                            message: `${user?.displayName || 'Someone'} is requesting $${costPerPerson.toFixed(2)} from you`,
+                            to: member,
+                            amount: Number(costPerPerson.toFixed(2)),
+                            status: 'pending',
+                            from: user?.email,
+                            timestamp: Date.now(),
+                            groupId: groupId,
+                            receiptDetails: {
+                                items: receiptData.item_list,
+                                tax: receiptData.tax || 0,
+                                total: totalCost
+                            }
+                        }
+                    };
+                    // Log the data before sending to Firebase
+                    console.log('Sending request data:', requestData);
+                    // Update Firebase with the properly structured data
+                    try {
+                        await update(requestData);
+                    } catch (updateError) {
+                        console.error(`Failed to create request for ${member}:`, updateError);
+                        // Continue with other members even if one fails
+                    }
+                }
+            }
+            alert('Payment requests sent successfully!');
+            navigate('/');
+        } catch (error) {
+            console.error('Error processing split:', error);
+            alert('Failed to send payment requests. Please try again.');
+        }
+    };
 
-        const receiptData = callOpenAI();
-        navigate('/receipt', { state: { receiptData, members, currentIndex: 0 } });
-        // const reader = new FileReader();
-        // reader.onloadend = () => {
-        //     // The result will be the base64-encoded string
-        //     const base64String = reader.result.split(',')[1]; // Remove the data URL prefix
-        //     console.log(base64String);
-        // };
-        // reader.readAsDataURL(file);
-
-        // callOpenAI()
-    }
+  
 
     const handleSplitByItem = async () => {
         if (!base64String) {
@@ -121,8 +174,8 @@ const UploadPage = () => {
                 />
             </div>
             <div className="flex flex-col w-full gap-1">
-                <div className="flex flex-row justify-center items-center">
-                    {/* <button
+                <div className="flex flex-row justify-center items-center gap-x-6">
+                    <button
                         className="py-2 px-4 rounded-md text-sm font-semibold bg-purple-200 text-purple-700 hover:bg-purple-300"
                         onClick={() => handleSplitEvenly()}
                     >
