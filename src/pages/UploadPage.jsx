@@ -1,33 +1,30 @@
-import { useState, useContext, useEffect } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
-import { useDbData, useDbUpdate } from '../utilities/firebase';
-import { userContext } from '../components/Dispatcher';
-import CameraComponent from '../components/CameraComponent';
-import { v4 as uuidv4 } from 'uuid';
-import { useMutation } from '@tanstack/react-query';
-import { callOpenAi } from "../api"
+import { useState, useContext, useEffect } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import { useDbData, useDbUpdate } from "../utilities/firebase";
+import { userContext } from "../components/Dispatcher";
+import CameraComponent from "../components/CameraComponent";
+import { v4 as uuidv4 } from "uuid";
+import { useMutation } from "@tanstack/react-query";
+import { callOpenAi } from "../api";
 
 const UploadPage = () => {
+  const { groupId } = useParams();
+  const navigate = useNavigate();
 
-    const { groupId } = useParams();
-    const navigate = useNavigate();
+  const [imagePreview, setImagePreview] = useState(null);
+  const [numberOfPeople, setNumberOfPeople] = useState(0);
+  const user = useContext(userContext);
 
-    const [imagePreview, setImagePreview] = useState(null);
-    const [numberOfPeople, setNumberOfPeople] = useState(0);
-    const user = useContext(userContext);
+  const [base64String, setBase64String] = useState(null);
+  const [photoTaken, setPhotoTaken] = useState(null);
 
-    const [base64String, setBase64String] = useState(null);
-    const [photoTaken, setPhotoTaken] = useState(null);
-
-    const [members, membersError] = useDbData(`/groups/${groupId}`);
+  const [members, membersError] = useDbData(`/groups/${groupId}`);
 
     const [update, result] = useDbUpdate();
 
-    // const [update, result] = useDbUpdate(`/requests/${requestId}`);
+  // const [update, result] = useDbUpdate(`/requests/${requestId}`);
 
-
-
-    console.log(members);
+  console.log(members);
 
     const { mutate: callOpenAiMutate, mutateAsync: callOpenAiMutateAsync, isPending: callOpenAiLoading, isError: callOpenAiError, isSuccess: callOpenAiSuccess, data: receiptData } = useMutation({
         mutationFn: callOpenAi,
@@ -36,28 +33,29 @@ const UploadPage = () => {
         }
     });
 
-    if (membersError) {
-        return <div className="h-full w-full flex justify-center items-center">
-            <h1 className="text-red-500" >Error loading data {membersError.toString()}</h1>
-        </div>;
+  if (membersError) {
+    return (
+      <div className="h-full w-full flex justify-center items-center">
+        <h1 className="text-red-500">
+          Error loading data {membersError.toString()}
+        </h1>
+      </div>
+    );
+  }
+
+  const handleFileChange = (event) => {
+    if (event.target.files && event.target.files.length > 0) {
+      const file = event.target.files[0];
+      const previewURL = URL.createObjectURL(file);
+      setImagePreview(previewURL); // Set image preview URL
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        const string = reader.result.split(",")[1]; // Remove the data URL prefix
+        setBase64String(string);
+      };
+      reader.readAsDataURL(file);
     }
-
-
-    const handleFileChange = (event) => {
-        if (event.target.files && event.target.files.length > 0) {
-            const file = event.target.files[0];
-            const previewURL = URL.createObjectURL(file);
-            setImagePreview(previewURL);  // Set image preview URL
-            const reader = new FileReader();
-            reader.onloadend = () => {
-                const string = reader.result.split(',')[1]; // Remove the data URL prefix
-                setBase64String(string);
-            };
-            reader.readAsDataURL(file);
-        }
-    };
-
-
+  };
 
     const handleSplitEvenly = async () => {
         if (!base64String) {
@@ -119,33 +117,32 @@ const UploadPage = () => {
 
 
 
-    const handleSplitByItem = async () => {
-        if (!base64String) {
-            return;
-        }
-        console.log(base64String);
-        const callOpenAiBody = {
-            base64String: base64String,
-            user: user,
-            members: members
-        }
+  const handleSplitByItem = async () => {
+    if (!base64String) {
+      return;
+    }
+    console.log(base64String);
+    const callOpenAiBody = {
+      base64String: base64String,
+      user: user,
+      members: members,
+    };
 
         const receiptData = await callOpenAiMutateAsync(callOpenAiBody);
 
         navigate('/receipt', { state: { receiptData: receiptData, members: members.filter(member => member != user.email), currentIndex: 0 } });
     }
 
-    useEffect(() => {
-        if (!!photoTaken) {
-            console.log(photoTaken);
-            setBase64String(photoTaken.slice(23));
-        }
-    }, [photoTaken, setPhotoTaken]);
+  useEffect(() => {
+    if (!!photoTaken) {
+      console.log(photoTaken);
+      setBase64String(photoTaken.slice(23));
+    }
+  }, [photoTaken, setPhotoTaken]);
 
-    useEffect(() => {
-        console.log(callOpenAiLoading)
-    }, [callOpenAiLoading])
-
+  useEffect(() => {
+    console.log(callOpenAiLoading);
+  }, [callOpenAiLoading]);
 
     return (
         // <div className="bg-purple-200">
@@ -189,23 +186,19 @@ const UploadPage = () => {
                     </button>
                     <button className={`py-2 px-4 rounded-md text-sm font-semibold bg-purple-200 text-purple-700
                      hover:bg-purple-300 disabled:cursor-not-allowed`}
-                        onClick={() => handleSplitByItem()}
-                        disabled={callOpenAiLoading}
-                    >
-                        {callOpenAiLoading ? (
-                            <span>
-                                Loading...
-                            </span>
-                        ) : (
-                            <span>
-                                Split by item
-                            </span>
-                        )}
-                    </button>
-                </div>
-            </div>
+            onClick={() => handleSplitByItem()}
+            disabled={callOpenAiLoading}
+          >
+            {callOpenAiLoading ? (
+              <span>Loading...</span>
+            ) : (
+              <span>Split by item</span>
+            )}
+          </button>
         </div>
-    )
-}
+      </div>
+    </div>
+  );
+};
 
 export default UploadPage;
