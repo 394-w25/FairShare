@@ -12,7 +12,7 @@ const ReviewReceipt = () => {
     const [items, setItems] = useState(state.receiptData.item_list || []);
     console.log(items)
     const [isPopupOpen, setPopupOpen] = useState(false);
-    const [changeIndex, setChangeIndex] = useState(0);
+    const [changeIndex, setChangeIndex] = useState(-1);
     const handleDelete = (index) => {
         const newItems = items.filter((_, i) => i !== index);
         setItems(newItems);
@@ -26,11 +26,11 @@ const ReviewReceipt = () => {
         navigate('/receipt', { state: { receiptData: updatedReceiptData, members: state.members, currentIndex: 0 }});
     };
 
-    const PopupForm = ({ isPopupOpen, onClose, index }) => {
+    const PopupForm = ({ isPopupOpen, onClose, index = null }) => {
         // Create local state for the form
         const [formData, setFormData] = useState({
-            name: items[index]?.name || '',
-            price: items[index]?.price || ''
+            name: index !== null ? items[index]?.name : '',
+            price: index !== null ? items[index]?.price : ''
         });
 
         const handleChange = (e) => {
@@ -43,14 +43,23 @@ const ReviewReceipt = () => {
 
         const handleSubmit = (e) => {
             e.preventDefault();
-            // Update the items array only on submit
-            const newItems = [...items];
-            newItems[index] = {
-                ...newItems[index],
-                name: formData.name,
-                price: formData.price
-            };
-            setItems(newItems);
+            setChangeIndex(-1)
+            if (index !== null) {
+                // Edit existing item
+                const newItems = [...items];
+                newItems[index] = {
+                    ...newItems[index],
+                    name: formData.name,
+                    price: formData.price
+                };
+                setItems(newItems);
+            } else {
+                // Add new item
+                setItems([...items, { 
+                    name: formData.name, 
+                    price: formData.price,
+                }]);
+            }
             onClose();
         };
         
@@ -137,22 +146,26 @@ const ReviewReceipt = () => {
                     <PopupForm 
                         isPopupOpen={isPopupOpen}
                         onClose={() => setPopupOpen(false)}
-                        index={changeIndex}
+                        index={changeIndex !== -1 ? changeIndex : null}
                     />
                 </ul>
-            <button 
-                // onClick={sendMessage}
-                className="bg-stone-900 rounded-lg text-white px-6 py-3 hover:bg-purple-800"
-            >
-                Add Missing Item
-            </button>
+            <div className="flex gap-16">
+                <button 
+                    onClick={() => {{
+                        setPopupOpen(true);
+                    }}}
+                    className="bg-stone-900 rounded-lg text-white px-6 py-3 hover:bg-purple-800"
+                >
+                    Add Missing Item
+                </button>
 
-            <button 
-                onClick={() => movetoReceipt()}
-                className="bg-stone-900 rounded-lg text-white px-6 py-3 hover:bg-purple-800"
-            >
-                Assign Items to Participants
-            </button>
+                <button 
+                    onClick={() => movetoReceipt()}
+                    className="bg-stone-900 rounded-lg text-white px-6 py-3 hover:bg-purple-800"
+                >
+                    Assign Items to Participants
+                </button>
+            </div>
         </div>
     
     );
