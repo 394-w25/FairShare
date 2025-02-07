@@ -9,7 +9,7 @@ const ReceiptPage = () => {
     const user = useContext(userContext);    
     const navigate = useNavigate();
     const { state } = useLocation();
-    console.log(state);
+    console.log(state)
     const items = state.receiptData.item_list || [];
     const taxAmount = state.receiptData.tax || 0;
     const personTax = items.length > 0 ? taxAmount / items.length : 0;
@@ -18,7 +18,6 @@ const ReceiptPage = () => {
     const [requestId, setRequestId] = useState(uuidv4());
     const [quantities, setQuantities] = useState(Array(items.length).fill(0));
     const [update, result] = useDbUpdate(`/requests/${requestId}`);
-    console.log(requestId);
 
     const incrementTotalCost = (price) => {
         setTotalCost(prevCount => prevCount + price + personTax);

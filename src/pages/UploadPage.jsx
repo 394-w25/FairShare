@@ -128,7 +128,8 @@ const UploadPage = () => {
         console.log('yo')
 
         const receiptData = await callOpenAI();
-        navigate('/receipt', { state: { receiptData, members:members.filter(member => member != user.email), currentIndex: 0 }});
+        // navigate('/receipt', { state: { receiptData, members:members.filter(member => member != user.email), currentIndex: 0 }});
+        navigate('/reviewreceipt', { state: { receiptData, members:members.filter(member => member != user.email), currentIndex: 0 }});
 
     }
 
