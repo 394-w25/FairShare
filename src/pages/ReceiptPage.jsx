@@ -48,8 +48,9 @@ const ReceiptPage = () => {
 
     const sendMessage = () => {
         const request = {
-            message: `${user.displayName} is requesting ${totalCost} from you`,
-            to: state.members[currentIndex]
+            message: `${user.displayName} is requesting $${totalCost} from you`,
+            to: state.members[currentIndex],
+            from: user.displayName
         };
 
         update(request);
