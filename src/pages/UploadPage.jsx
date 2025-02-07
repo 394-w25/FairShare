@@ -1,6 +1,6 @@
 import { useState, useContext, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { useDbData, useDbUpdate } from "../utilities/firebase";
+import { useDbData, useDbMultiUpdate } from "../utilities/firebase";
 import { userContext } from "../components/Dispatcher";
 import CameraComponent from "../components/CameraComponent";
 import { v4 as uuidv4 } from "uuid";
@@ -20,9 +20,8 @@ const UploadPage = () => {
 
     const [members, membersError] = useDbData(`/groups/${groupId}`);
 
-    const [update, result] = useDbUpdate();
+    const [update, result] = useDbMultiUpdate();
 
-    // const [update, result] = useDbUpdate(`/requests/${requestId}`);
 
     console.log(members);
 

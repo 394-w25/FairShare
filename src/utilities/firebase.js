@@ -71,7 +71,18 @@ const makeResult = (error) => {
   return { timestamp, error, message };
 };
 
-export const useDbUpdate = () => {
+export const useDbUpdate = (path) => {
+  const [result, setResult] = useState();
+  const updateData = useCallback((value) => {
+      update(ref(database, path), value)
+      .then(() => setResult(makeResult()))
+      .catch((error) => setResult(makeResult(error)))
+  }, [database, path]);
+
+  return [updateData, result];
+};
+
+export const useDbMultiUpdate = () => {
   const [result, setResult] = useState();
   // We remove the path parameter since we’ll pass complete update objects
   const updateData = useCallback((updates) => {
@@ -90,8 +101,6 @@ export const useDbUpdate = () => {
   }, [database]); // Only depend on database instance
   return [updateData, result];
 };
-
-
 
 export const useDbRemove = (path) => {
   const [result, setResult] = useState();

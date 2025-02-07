@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useContext } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import { useDbUpdate } from '../utilities/firebase';
 import { useNavigate } from 'react-router';
@@ -6,18 +6,21 @@ import SearchBar from './SearchBar';
 import SearchUserCard from './UserCard/SearchUserCard';
 import GroupUserCard from './UserCard/GroupUserCard';
 import CloseButton from './CloseButton';
+import { userContext } from './Dispatcher';
 
 
 const NewGroupModal = ({ users, isOpen, setIsOpen}) => {
+    const user = useContext(userContext);
+    console.log(user);
     const [search, setSearch] = useState("");
-    const [group, setGroup] = useState([]);
+    const [group, setGroup] = useState([user.email]);
     const [groupId, setGroupId] = useState(uuidv4());
     const [update, result] = useDbUpdate(`groups/${groupId}`);
     const nav = useNavigate();
 
     console.log(groupId)
 
-    const filteredUsers = users.filter(user => {return user.email.startsWith(search) && search !== ""})
+    const filteredUsers = users.filter(user => {return user.email.startsWith(search.toLowerCase()) && search !== ""})
 
 
     const handleClick = () => {
