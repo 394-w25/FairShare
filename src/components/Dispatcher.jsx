@@ -6,6 +6,8 @@ import HomePage from '../pages/HomePage';
 import UploadPage from '../pages/UploadPage';
 import ReceiptPage from '../pages/ReceiptPage';
 import RequestsPage from '../pages/RequestsPage';
+import Navbar from "../components/NavigationBar";
+
 
 
 export const userContext = createContext(); 
@@ -13,34 +15,27 @@ export const userContext = createContext();
 const Dispatcher = () => {
     const [user, loading] = useAuthState(); 
 
-    if(loading) {
-        return <p> loading user </p>
+    if (loading) {
+        return <p>Loading user...</p>;
     }
 
-    return (user ? 
-
-
-    <userContext.Provider value={user}>
-        <BrowserRouter> 
+    return user ? (
+        <userContext.Provider value={user}>
+            {/* Navbar for authenticated users */}
+            <Navbar />  
             <Routes>
                 <Route path="/" element={<HomePage />} /> 
                 <Route path="/receipt" element={<ReceiptPage />} /> 
                 <Route path="/upload/:groupId" element={<UploadPage />} /> 
-                <Route path="/requests" element={<RequestsPage/>} />
+                <Route path="/requests" element={<RequestsPage />} />
             </Routes>
-        </BrowserRouter>
-    </userContext.Provider>
-
-    :
-
-    <BrowserRouter> 
+        </userContext.Provider>
+    ) : (
         <Routes>
             <Route path="/" element={<LandingPage />} /> 
             <Route path="*" element={<Navigate to="/" />} /> 
         </Routes>
-    </BrowserRouter>
-    
-    )
+    );
 
 }
 
