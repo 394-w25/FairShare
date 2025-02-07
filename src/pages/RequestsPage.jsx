@@ -19,13 +19,19 @@ const Requestspage = () => {
     </div> ;
     }
 
-    const requests = Object.values(data)
-                            .filter(request => request.to === user.email);
+    
+    const requests = Object.entries(data)
+                            .filter(([id, request]) => request.to === user.email);
 
-    const requestComponents = requests.map((request, index) => <RequestCard key={index} message={request.message}/>)
+    console.log(requests);
+    const requestComponents = requests.map(([id, request]) => <RequestCard key={id} 
+                                                                            requestId = {id}
+                                                                            message={request.message}
+                                                                            from={request.from}/>)
 
     return (
         <div className="flex flex-col gap-y-2">
+            <h1 className="font-bold text-center text-3xl my-2 "> Incoming Requests </h1>
             {requestComponents}
         </div>
     )
