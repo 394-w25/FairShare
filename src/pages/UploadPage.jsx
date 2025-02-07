@@ -21,7 +21,9 @@ const UploadPage = () => {
 
     const [members, membersError] = useDbData(`/groups/${groupId}`);
 
-    const [updateDb] = useDbUpdate();
+    const [update, result] = useDbUpdate(); 
+
+    // const [update, result] = useDbUpdate(`/requests/${requestId}`);
 
 
 
@@ -108,31 +110,68 @@ const UploadPage = () => {
 
     const handleSplitEvenly = async () => {
         if (!base64String) {
-            console.error("No receipt image uploaded.");
+            console.error('No receipt image uploaded.');
             return;
         }
-
-        const receiptData = callOpenAI();
-        if (!receiptData || !receiptData.item_list) {
-            console.error("Failed to process receipt data.");
-            return;
-        }    
-        
-        const totalCost = receiptData.item_list.reduce((sum, item) => sum + item.price * item.quantity, 0) + receiptData.tax;
-        const costPerPerson = totalCost / receiptData.people.length;
-
-        members.forEach(member => {
-            if (member != user.email) {
-                const requestID = uuidv4();
-                updateDb(`/requests/${requestID}`, {
-                    message: `${user.displayName} is requesting $${costPerPerson} from you`,
-                    to: member
-                });
+        try {
+            // First, let’s validate that we have the receipt data
+            const receiptData = await callOpenAI();
+            if (!receiptData || !receiptData.item_list) {
+                console.error('Failed to process receipt data.');
+                return;
             }
-        });
-        alert("Payment reqests sent successfully!");
-        navigate("/")
-    }
+            // Calculate the total cost with tax
+            const totalCost = receiptData.item_list.reduce(
+                (sum, item) => sum + (item.price * item.quantity),
+                0
+            ) + (receiptData.tax || 0); // Added fallback for tax
+            // Calculate per-person cost, ensuring it’s a number
+            const costPerPerson = totalCost / (members?.length || 1);
+            // Make sure members exists and is an array
+            if (!Array.isArray(members)) {
+                throw new Error('Members data is not properly formatted');
+            }
+            // Process each member one at a time instead of using Promise.all
+            for (const member of members) {
+                if (member !== user.email) {
+                    const requestID = uuidv4();
+                    // Create a properly structured request object
+                    const requestData = {
+                        [`/requests/${requestID}`]: {
+                            message: `${user?.displayName || 'Someone'} is requesting $${costPerPerson.toFixed(2)} from you`,
+                            to: member,
+                            amount: Number(costPerPerson.toFixed(2)),
+                            status: 'pending',
+                            from: user?.email,
+                            timestamp: Date.now(),
+                            groupId: groupId,
+                            receiptDetails: {
+                                items: receiptData.item_list,
+                                tax: receiptData.tax || 0,
+                                total: totalCost
+                            }
+                        }
+                    };
+                    // Log the data before sending to Firebase
+                    console.log('Sending request data:', requestData);
+                    // Update Firebase with the properly structured data
+                    try {
+                        await update(requestData);
+                    } catch (updateError) {
+                        console.error(`Failed to create request for ${member}:`, updateError);
+                        // Continue with other members even if one fails
+                    }
+                }
+            }
+            alert('Payment requests sent successfully!');
+            navigate('/');
+        } catch (error) {
+            console.error('Error processing split:', error);
+            alert('Failed to send payment requests. Please try again.');
+        }
+    };
+
+  
 
     const handleSplitByItem = async () => {
         console.log('hey')
