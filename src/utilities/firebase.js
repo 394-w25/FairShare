@@ -71,24 +71,27 @@ const makeResult = (error) => {
   return { timestamp, error, message };
 };
 
-export const useDbUpdate = (path) => {
+export const useDbUpdate = () => {
   const [result, setResult] = useState();
-
-  const updateData = useCallback((value) => {
-    // Return the promise to allow awaiting in the calling function
-    return update(ref(database, path), value)
+  // We remove the path parameter since we’ll pass complete update objects
+  const updateData = useCallback((updates) => {
+    // Updates should be an object containing all the paths and their values
+    return update(ref(database), updates)
       .then(() => {
-        setResult(makeResult());
-        return makeResult(); // Return result for further chaining if needed
+        const successResult = makeResult();
+        setResult(successResult);
+        return successResult;
       })
       .catch((error) => {
-        setResult(makeResult(error));
-        throw error; // Rethrow the error to be caught by the caller
+        const errorResult = makeResult(error);
+        setResult(errorResult);
+        throw error;
       });
-  }, [path, database]);
-
+  }, [database]); // Only depend on database instance
   return [updateData, result];
 };
+
+
 
 export const useDbRemove = (path) => {
   const [result, setResult] = useState();
