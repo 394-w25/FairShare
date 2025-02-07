@@ -21,10 +21,10 @@ const ReceiptPage = () => {
     console.log(requestId);
 
     const incrementTotalCost = (price) => {
-        setTotalCost(prevCount => prevCount + price);
+        setTotalCost(prevCount => prevCount + price + personTax);
     };
     const decrementTotalCost = (price) => {
-        setTotalCost(prevCount => prevCount - price);
+        setTotalCost(prevCount => prevCount - price - personTax);
     };
     const addItem = (index) => {
         setQuantities(prev => {
