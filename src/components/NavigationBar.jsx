@@ -11,7 +11,7 @@ const Navbar = () => {
           <Link to="/requests" className="hover:underline">Incoming Requests</Link>
         </li>
         <li>
-          <Link to="/receipt" className="hover:underline">Receipt</Link>
+          <Link to="/profile" className="hover:underline">My Profile</Link>
         </li>
       </ul>
     </nav>
