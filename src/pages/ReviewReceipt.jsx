@@ -149,7 +149,7 @@ const ReviewReceipt = () => {
                         index={changeIndex !== -1 ? changeIndex : null}
                     />
                 </ul>
-            <div className="flex gap-16">
+            <div className="flex justify-around">
                 <button 
                     onClick={() => {{
                         setPopupOpen(true);

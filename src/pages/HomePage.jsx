@@ -69,15 +69,10 @@ const HomePage = () => {
             {groupsUserIsIn.map(([groupId, group], index) => <Link to={`/upload/${groupId}`} key={index}> <GroupCard index={index} usersInGroup={group} /> </Link>)}
         </div>
 
-        <div className="flex space-x-32 mt-auto">
+        <div className="flex space-x-32 mt-4">
             <button className="w-56 p-2 border-2 border-black bg-black text-white mt-auto mb-2" 
                     onClick={() => setIsOpen(true)}> 
                 Create New Group 
-            </button>
-
-            <button className="w-56 p-2 border-2 border-black bg-black text-white mt-auto mb-2"
-                    onClick={() => nav('/requests')}>
-                Incoming Requests 
             </button>
         </div>
 
