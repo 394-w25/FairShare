@@ -1,3 +1,5 @@
+import OpenAI from "openai";
+
 export async function callOpenAi(body) {
     try {
         const response = await fetch('https://api.openai.com/v1/chat/completions', {
@@ -7,7 +9,7 @@ export async function callOpenAi(body) {
                 'Authorization': `Bearer ${import.meta.env.VITE_OPENAI_API_KEY}`,
             },
             body: JSON.stringify({
-                model: 'gpt-4o-mini', // Specify the model you're using
+                model: 'gpt-4o-mini',
                 messages: [
                     {
                         role: 'user',
@@ -25,58 +27,80 @@ export async function callOpenAi(body) {
                         ],
                     },
                 ],
+                response_format: { 
+                    type: "json_schema", 
+                    json_schema: {
+                        name: "receipt_schema",
+                        strict: true,
+                        schema: {
+                            type: "object",
+                            description: "Schema for extracting items from a receipt image",
+                            properties: {
+                                item_list: {
+                                    type: "array",
+                                    description: "List of items on the receipt",
+                                    items: {
+                                        type: "object",
+                                        properties: {
+                                            id: { type: "integer", description: "Item ID" },
+                                            name: { type: "string", description: "Item name" },
+                                            price: { type: "number", description: "Unit price of the item" },
+                                            quantity: { type: "integer", description: "Quantity of the item" }
+                                        },
+                                        required: ["id", "name", "price", "quantity"],
+                                        additionalProperties: false
+                                    }
+                                },
+                                tax: { type: "number", description: "Tax amount" },
+                                total: { type: "number", description: "Total cost before tax" },
+                                final_bill: { type: "number", description: "Final total after tax" }
+                            },
+                            required: ["item_list", "tax", "total", "final_bill"],
+                            additionalProperties: false
+                        }
+                    }
+                },
                 max_tokens: 300,
             }),
         });
 
+        if (!response.ok) {
+            throw new Error(`OpenAI API error: ${response.status} - ${response.statusText}`);
+        }
+
         const data = await response.json();
         console.log(data)
-        console.log(data['choices'][0]['message']['content'])
-        const stringResponse = data['choices'][0]['message']['content'];
-        console.log("trying this rn")
 
-        // First, let's clean up the string before trying to parse it
-        const cleanString = stringResponse
-        .replace(/\\n/g, '') // Remove newline escape characters
-        .replace(/\\"/g, '"') // Handle escaped quotes if present
-        .trim();  // Remove any extra whitespace
-        const match = cleanString.match(/\{[\s\S]*\}/);
-
-        // Before parsing, let's make sure the JSON is properly terminated
-        let jsonString = match ? match[0] : null;
-        if (jsonString && !jsonString.endsWith('}]}')){
-        // Add missing closing brackets if needed
-        if (!jsonString.endsWith(']}')) {
-            jsonString += ']';
-        }
-        if (!jsonString.endsWith('}')) {
-            jsonString += '}';
-        }
+        if (!data.choices || data.choices.length === 0) {
+            throw new Error("Invalid response from OpenAI API");
         }
 
-        // Now we can safely parse the JSON
-        const jsonContent = jsonString ? JSON.parse(jsonString) : null;
+        const jsonContent = data.choices[0].message?.content;
+        console.log(jsonContent)
 
-        // Create the final parsed JSON object
-        const parsedJson = jsonContent ? {
-        item_list: jsonContent.item_list,
-        mainUser: {name: body.user.email},
-        people: body.members,
-        tax: jsonContent.tax,
-        } : null;
-
-        // Add error handling
-        if (!parsedJson) {
-        console.error('Failed to parse JSON content');
-        return;
+        if (!jsonContent) {
+            throw new Error("Failed to extract content from OpenAI response");
         }
 
+        // Since we're using JSON Schema, the content should already be valid JSON
+        const parsedJson = JSON.parse(jsonContent);
         console.log(parsedJson)
 
-        // setJsonData(parsedJson)
+        // Final structured response
+        const finalData = {
+            item_list: parsedJson.item_list || [],
+            mainUser: { name: body.user?.email || "Unknown" },
+            people: body.members || [],
+            tax: parsedJson.tax || 0,
+            total: parsedJson.total || 0,
+            final_bill: parsedJson.final_bill || 0,
+        };
 
-        return parsedJson;
+        console.log(finalData);
+        return finalData;
+
     } catch (error) {
-        console.error('Error calling OpenAI API:', error);
+        console.error("Error calling OpenAI API:", error);
+        return null;
     }
 }
