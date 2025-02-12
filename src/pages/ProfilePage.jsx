@@ -1,6 +1,6 @@
 import { useDbData, useDbUpdate, signOut } from "../utilities/firebase";
 import { useNavigate, Link } from "react-router-dom";
-import { useContext, useState } from "react";
+import { useContext, useState, useEffect } from "react";
 import { userContext } from "../components/Dispatcher";
 import UserIcon from "../components/UserIcon";
 import RequestCard from "../components/RequestCard";
@@ -81,10 +81,7 @@ const ProfilePage = () => {
 
   //List of all of the requests the signed-in user has
   const requestsUserIsIn = Object.entries(requests).filter(
-    ([requestId, request]) => {
-      const listOfUsers = Object.values(request);
-      return listOfUsers.includes(user.email);
-    }
+    ([requestId, request]) => request.to === user.email
   );
 
   const handleClick = (buttonType) => {
@@ -130,15 +127,19 @@ const ProfilePage = () => {
       {selectedTab === "Requests" ? (
         <div className="flex flex-col border-2 border-gray-300 rounded-lg pt-2 gap-y-2 overflow-auto h-[725px] w-1/2">
           {requestsUserIsIn.map(([requestId, request], index) => (
-            <RequestCard key={index} message={request.message} />
+            <RequestCard
+              key={requestId}
+              requestId={requestId}
+              message={request.message}
+              from={request.from}
+            />
           ))}
         </div>
       ) : (
         <div className="flex flex-col border-2 border-gray-300 rounded-lg pt-2 gap-y-2 overflow-auto h-[725px] w-1/2">
           {groupsUserIsIn.map(([groupId, group], index) => (
             <Link to={`/upload/${groupId}`} key={index}>
-              {" "}
-              <GroupCard index={index} usersInGroup={group} />{" "}
+              <GroupCard index={index} usersInGroup={group} />
             </Link>
           ))}
         </div>
