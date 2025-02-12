@@ -93,7 +93,7 @@ const ProfilePage = () => {
     <div className="min-h-screen flex flex-col items-center gap-y-2 overflow-auto">
       <div className="flex flex-row items-center border-b-2">
         <div className="m-4">
-          <UserIcon size={12} name={user.displayName} />
+          <UserIcon size={12} name={user ? user.displayName : "N/A"} />
         </div>
         <div className="flex flex-col mr-8 ml-1">
           <h className="font-semibold text-lg">{user.displayName}</h>

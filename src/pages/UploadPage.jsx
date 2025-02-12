@@ -133,8 +133,9 @@ const UploadPage = () => {
         };
 
         const receiptData = await callOpenAiMutateAsync(callOpenAiBody);
-
         navigate('/reviewreceipt', { state: { receiptData: receiptData, members: members.filter(member => member != user.email), currentIndex: 0 } });
+
+
     }
 
     useEffect(() => {
