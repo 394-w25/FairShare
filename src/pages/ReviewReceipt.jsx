@@ -124,19 +124,19 @@ const ReviewReceipt = () => {
                                 <span className="font-medium">{item.name}</span>
                                 <span className="text-gray-600">${item.price}</span>
                             </li>
-                            <div className="flex gap-4">
+                            <div className="flex flex-col gap-4">
                                 <button 
                                     onClick={() => {
                                         setChangeIndex(index);
                                         setPopupOpen(true);
                                     }}
-                                    className="bg-stone-900 rounded-lg text-white px-6 py-3 hover:bg-purple-800"
+                                    className="bg-stone-900 rounded-lg text-white px-3 py-1 hover:bg-purple-800"
                                 >
                                     Edit Item
                                 </button>
                                 <button 
                                     onClick={() => handleDelete(index)}
-                                    className="bg-stone-900 rounded-lg text-white px-6 py-3 hover:bg-purple-800"
+                                    className="bg-stone-900 rounded-lg text-white px-3 py-1 hover:bg-purple-800"
                                 >
                                     Delete Item
                                 </button>
@@ -149,22 +149,24 @@ const ReviewReceipt = () => {
                         index={changeIndex !== -1 ? changeIndex : null}
                     />
                 </ul>
-            <div className="flex gap-16">
-                <button 
-                    onClick={() => {{
-                        setPopupOpen(true);
-                    }}}
-                    className="bg-stone-900 rounded-lg text-white px-6 py-3 hover:bg-purple-800"
-                >
-                    Add Missing Item
-                </button>
+            <div className="flex justify-center w-full"> 
+                <div className="flex flex-col gap-4">
+                    <button 
+                        onClick={() => {{
+                            setPopupOpen(true);
+                        }}}
+                        className="bg-stone-900 rounded-lg text-white px-6 py-3 w-50 hover:bg-purple-800 mt-4"
+                    >
+                        Add Missing Item
+                    </button>
 
-                <button 
-                    onClick={() => movetoReceipt()}
-                    className="bg-stone-900 rounded-lg text-white px-6 py-3 hover:bg-purple-800"
-                >
-                    Assign Items to Participants
-                </button>
+                    <button 
+                        onClick={() => movetoReceipt()}
+                        className="bg-stone-900 rounded-lg text-white px-6 py-3 w-50 hover:bg-purple-800"
+                    >
+                        Next
+                    </button>
+                </div>
             </div>
         </div>
     
