@@ -154,6 +154,7 @@ const ReviewReceipt = () => {
                     <button 
                         onClick={() => {{
                             setPopupOpen(true);
+                            setChangeIndex(-1);
                         }}}
                         className="bg-stone-900 rounded-lg text-white px-6 py-3 w-50 hover:bg-purple-800 mt-4"
                     >
